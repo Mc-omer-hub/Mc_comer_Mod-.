@@ -1,0 +1,11 @@
+{
+  "version": "6.0",
+  "maintenance": false,
+  "maintenance_message": "系统维护中，请稍后重试",
+  "download_url": "https://example.com/download/Mc_comer_Mod_v6.0.exe",
+  "log": [
+    "更新平台网站",
+    "代码全面重构,升级页面",
+    "简单处理了缓存ct问题"
+  ]
+}
