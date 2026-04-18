@@ -8,6 +8,12 @@ Mc_comer Mod 是一款 Cheat Engine 7.6 辅助工具，帮助你快速加载 Mod
 
 ---
 
+## 下载
+
+请先访问链接https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/tag/Mod
+去下载最新的版本
+
+---
 ## 登录
 
 运行程序后，首先会看到登录页面：
