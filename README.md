@@ -1,4 +1,4 @@
-# Mc_comer Mod v6.0 使用说明
+# Mc_comer Mod 使用说明
 
 ## 简介
 
