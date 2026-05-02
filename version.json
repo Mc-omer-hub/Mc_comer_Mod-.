@@ -1,7 +1,7 @@
 {
   "version": "6.0",
-  "maintenance": false,
-  "maintenance_message": "系统维护中，请稍后重试",
+  "maintenance": true,
+  "maintenance_message": "项目进入维护,由于网易在5月1号更新了特殊版本导致ct功能全部坏死请等待更新及修复",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
     "更新平台网站",
