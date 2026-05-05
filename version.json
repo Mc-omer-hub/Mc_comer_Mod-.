@@ -1,12 +1,10 @@
 {
-  "version": "6.1",
+  "version": "6.2",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "更新官网网站",
-    "优化启动器",
-    "CT层面修复大量损坏功能",
-    "解除维护"
+    "优化官网网站性能",
+    "CT层面继续修复损坏功能"
   ]
 }
