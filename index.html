@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mc_comer Mod</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 动效背景 -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- 检查更新中弹窗 -->
+<div id="checking-overlay" class="overlay hidden">
+  <div class="modal-card">
+    <div class="check-icon">🔄</div>
+    <div class="check-title">正在检查更新</div>
+    <div class="check-progress-wrap">
+      <div class="check-progress-track">
+        <div class="check-progress-fill" id="check-progress-fill"></div>
+      </div>
+      <div class="check-progress-text" id="check-progress-text">0%</div>
+    </div>
+    <div class="check-status" id="check-status">连接服务器...</div>
+  </div>
+</div>
+
+<!-- 维护状态弹窗 -->
+<div id="maintenance-overlay" class="overlay hidden">
+  <div class="modal-card">
+    <div class="modal-icon">🔧</div>
+    <div class="modal-title">系统维护中</div>
+    <div class="modal-msg" id="maintenance-msg">请稍后再试</div>
+  <div class="modal-btns">
+    <button class="modal-btn secondary" onclick="visitOfficialWebsite()">访问官网</button>
+    <button class="modal-btn" onclick="window.pywebview.api.exit_app()">退出程序</button>
+  </div>
+  </div>
+</div>
+
+<!-- 更新提示弹窗 -->
+<div id="update-overlay" class="overlay hidden">
+  <div class="modal-card">
+    <div class="modal-icon">⬆️</div>
+    <div class="modal-title">发现新版本</div>
+    <div class="modal-version" id="update-ver">发现新版本，请更新</div>
+    <div class="modal-log" id="update-log">
+      <ul></ul>
+    </div>
+    <div class="modal-btns" id="update-btns">
+      <button class="modal-btn secondary" id="btn-dl-direct">📥 直接下载</button>
+      <button class="modal-btn secondary" id="btn-dl-qq" onclick="window.pywebview.api.open_browser('https://qm.qq.com/q/cYPbkDAfvO')">🐧 QQ下载</button>
+      <button class="modal-btn secondary" id="btn-dl-web" onclick="window.pywebview.api.open_browser('https://mc-omer-hub.github.io/Mc_comer_Mod_Web/')">🌐 官网下载</button>
+    </div>
+    <div style="margin-top:12px;">
+      <button class="modal-btn secondary" onclick="window.pywebview.api.exit_app()" style="font-size:12px;padding:6px 16px;">不更新，退出</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 登录页 (原始样式，未修改) ═══════════ -->
+<div id="login-page" class="page">
+
+  <div id="login-card">
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <div class="pulse-icon">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="core">🔐</div>
+      </div>
+      <div id="title-typewriter" class="title-typewriter"></div>
+      <div id="sub-label" class="sub-label"></div>
+    </div>
+
+    <!-- ══ 登录方式切换 tabs ═══ -->
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-password" onclick="switchLoginTab('password')">密码登录</button>
+      <button class="login-tab" id="tab-qq" onclick="switchLoginTab('qq')">QQ登录</button>
+    </div>
+
+    <!-- ══ 密码登录面板 ═══ -->
+    <div class="login-panel" id="panel-password">
+      <div class="input-wrap" id="input-wrap">
+        <input
+          type="password"
+          id="pwd-input"
+          placeholder="输入访问密码"
+          autocomplete="off"
+          spellcheck="false"
+          tabindex="0"
+        >
+      </div>
+      <div id="err-msg" class="err-msg"></div>
+
+      <!-- 按钮 -->
+      <button class="btn-primary" id="login-btn" onclick="verifyPassword()">▶  登  录</button>
+
+      <!-- 忘记密码 -->
+      <a href="https://mc-omer-hub.github.io/Mc_comer_Mod_Web/" target="_blank" class="forgot-pwd">忘记密码？</a>
+
+      <div class="card-footer">欢迎使用Mc_comer Mod</div>
+    </div>
+
+    <!-- ══ QQ登录面板 - 扫码登录 ═══ -->
+    <div class="login-panel hidden" id="panel-qq">
+      <div class="qq-icon-wrap">
+        <div class="qq-icon">📱</div>
+      </div>
+      <!-- 二维码区域 -->
+      <div id="qq-qr-area" class="qq-qr-area">
+        <div id="qq-qr-placeholder" class="qq-qr-placeholder">
+          <div class="qq-qr-hint-icon">🐧</div>
+          <div class="qq-qr-hint-text">点击下方按钮获取二维码</div>
+        </div>
+        <img id="qq-qr-img" class="qq-qr-img hidden" alt="QQ登录二维码">
+      </div>
+      <div id="qq-status-text" class="qq-status-text">请使用手机 QQ 扫码登录</div>
+      <div id="qq-err-msg" class="err-msg"></div>
+      <button class="btn-qq" id="qq-login-btn">📷  获取二维码</button>
+      <div class="card-footer">使用手机 QQ 扫码 · 安全快捷</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     主窗口 — 纯 Python Hack 控制界面
+     ═══════════════════════════════════════ -->
+<div id="main-page" class="page">
+
+  <!-- 顶部导航 -->
+  <div id="main-header">
+    <div class="header-brand">
+      <div class="brand-dot"></div>
+      <span class="header-title">Mc_comer Mod</span>
+      <span class="header-ver" id="header-ver">v6.3</span>
+    </div>
+    <div class="header-spacer"></div>
+    <span id="header-user" class="header-user hidden">
+      <span class="user-icon">👤</span>
+      <span class="user-label" id="header-user-label"></span>
+      <span id="vip-badge" class="vip-badge hidden">👑 VIP</span>
+    </span>
+    <span id="vip-countdown" class="vip-countdown hidden"></span>
+    <span id="header-clock" class="header-clock">--:--:--</span>
+    <button class="btn-settings" id="btn-settings" title="设置">⚙</button>
+  </div>
+
+  <!-- 内容区 -->
+  <div id="main-content">
+
+    <!-- 连接控制 -->
+    <div class="section conn-section">
+      <div class="section-title">进程类</div>
+      <div class="conn-row">
+        <button class="card-btn" id="btn-connect" onclick="onConnect()">连接游戏</button>
+        <button class="card-btn danger" id="btn-disconnect" onclick="onDisconnect()" disabled>断开</button>
+        <span class="conn-status" id="conn-status">未连接</span>
+        <span class="latency-badge" id="latency-badge">延迟: --ms</span>
+      </div>
+    </div>
+
+    <!-- Hack 开关列表 -->
+    <div class="section">
+      <div class="section-title-row">
+        <div class="section-title">游戏功能</div>
+        <button class="btn-sm" id="btn-all-on" onclick="onEnableAll()">全部启用</button>
+        <button class="btn-sm danger" id="btn-all-off" onclick="onDisableAll()">全部禁用</button>
+      </div>
+      <div id="hack-list" class="hack-list">
+        <!-- 由 JS 动态生成 -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 状态栏 -->
+  <div id="main-statusbar">
+    <div id="status-dot" class="status-dot"></div>
+    <div id="status-text" class="status-text">就绪</div>
+    <div class="status-meta" id="status-meta">Mc_comer Mod-py V6.3</div>
+  </div>
+
+</div>
+
+<!-- Toast 通知 -->
+<div id="toast-container"></div>
+
+<!-- 设置面板（热键配置） -->
+<div id="settings-overlay" class="overlay hidden">
+  <div class="settings-card">
+    <div class="settings-header">
+      <span class="settings-title">⚙ 热键设置</span>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-hint">点击「点击绑定」按钮，然后按下键盘按键即可设置热键</div>
+      <div id="settings-hk-list"></div>
+    </div>
+    <div class="settings-footer">
+      <button class="modal-btn secondary" onclick="closeSettings()" style="padding:8px 24px;">完成</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=3"></script>
+</body>
+</html>
