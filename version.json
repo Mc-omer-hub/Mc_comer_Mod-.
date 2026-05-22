@@ -1,14 +1,18 @@
 {
-  "version": "6.3",
+  "version": "6.4",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "修复CT层面损坏功能",
-    "更新官网信息",
-    "采用C++直接内存自动修改,摆脱CE依赖",
-    "开源前端代码,可自行查看",
-    "彻底解决了CT文件的缓存问题",
-    "加入了VMP虚拟化代码技术"
+    "修复exe打包后cookie缓存路径异常问题",
+    "安装程序新增正式版软件许可及服务协议",
+    "新增QQ扫码登录缓存，免重复扫码",
+    "新增联机大厅锁服功能（VIP专属）",
+    "新增163小号机，内置16万+小号随机抽取",
+    "VIP/VIP过期改用网络时间校验，防篡改系统时钟",
+    "cookie缓存加密绑定机器码，禁止跨设备使用",
+    "优化程序性能",
+    "修复已知bug",
+    "挖掘出网络漏洞"
   ]
 }
