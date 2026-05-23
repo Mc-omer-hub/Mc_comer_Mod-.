@@ -1,18 +1,16 @@
 {
-  "version": "6.4",
+  "version": "6.5",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "修复exe打包后cookie缓存路径异常问题",
-    "安装程序新增正式版软件许可及服务协议",
-    "新增QQ扫码登录缓存，免重复扫码",
-    "新增联机大厅锁服功能（VIP专属）",
-    "新增163小号机，内置16万+小号随机抽取",
-    "VIP/VIP过期改用网络时间校验，防篡改系统时钟",
-    "cookie缓存加密绑定机器码，禁止跨设备使用",
+    "新增Reach功能，扩展攻击距离（3.0~7.0可调）",
+    "新增无限耐久功能，丢出物品再捡起后永不损坏",
+    "穿墙飞行升级为三合一注入（CanFly + Planar + 3D）",
+    "自动疾跑改为内存Hook注入，不再依赖按键模拟",
+    "移除已损坏的伪秒挖功能",
+    "修复Reach指令长度计算错误（7B→8B）",
     "优化程序性能",
-    "修复已知bug",
-    "挖掘出网络漏洞"
+    "修复已知bug"
   ]
 }
