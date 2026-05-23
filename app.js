@@ -1,5 +1,5 @@
 /* ============================================================
-   Mc_comer Mod · 前端逻辑 v6.3 (双模块 + 热键 + Toast动画)
+   Mc_comer Mod · 前端逻辑 v6.5 (双模块 + 热键 + Toast动画)
    ============================================================ */
 
 let _state = {
@@ -15,6 +15,7 @@ let _state = {
   userNickname: "",
   userType: "",
   vipDaysLeft: 0,
+  vipCategory: "none", // "none"/"permanent"(开发者永久)/"version"(版本)/"timed"(有时限)
 };
 
 /* ── 工具 ─────────────────────────────────────────────── */
@@ -151,6 +152,45 @@ function switchLoginTab(tab) {
   document.getElementById("panel-qq").classList.toggle("hidden", tab !== "qq");
   document.getElementById("err-msg").textContent = "";
   document.getElementById("qq-err-msg").textContent = "";
+
+  // 切换到 QQ 登录时先检查是否有缓存
+  if (tab === "qq") {
+    setTimeout(() => tryCachedQQLogin(), 100); // 延迟确保面板已渲染
+  }
+}
+
+/**
+ * 尝试 QQ 缓存登录 — 检测到有效缓存则询问用户是否一键登录
+ */
+async function tryCachedQQLogin() {
+  try {
+    const result = await window.pywebview.api.try_qq_cache_login();
+    if (!result.ok) return; // 无缓存 / 缓存无效 → 正常显示二维码
+
+    // 缓存有效，询问用户
+    const nickname = result.nickname || "QQ用户";
+    const qq = result.qq || "";
+    const confirmed = confirm(
+      "检测到账户 " + qq + " 有登录状态缓存\n\n是否使用该账户直接登录？"
+    );
+    if (!confirmed) {
+      // 用户选择"否" → 删除缓存，走正常二维码流程
+      await window.pywebview.api.reject_qq_cache();
+      showToast("已清除登录缓存", "ok");
+      return;
+    }
+
+    // 用户选择"是" → 直接登录进入主界面
+    try {
+      await window.pywebview.api.set_login_info("qq", qq, nickname);
+    } catch (e) {
+      console.warn("set_login_info error", e);
+    }
+    enterMainPage(null, null, nickname + " (" + qq + ")");
+    showToast("欢迎回来，" + nickname, "ok");
+  } catch (e) {
+    console.warn("tryCachedQQLogin error", e);
+  }
 }
 
 async function verifyPassword() {
@@ -161,12 +201,17 @@ async function verifyPassword() {
   const pwd = input.value.trim();
   if (!pwd) { errEl.textContent = "请输入密码"; return; }
   btn.disabled = true; btn.textContent = "验证中…";
-  let ok = false;
-  try { ok = await window.pywebview.api.verify_password(pwd); }
+  let loginType = false;
+  try { loginType = await window.pywebview.api.verify_password(pwd); }
   catch (e) { btn.disabled = false; btn.textContent = "▶  登  录"; errEl.textContent = "调用失败"; return; }
-  if (ok) {
-    // 密码登录 → 开发者 → VIP
+  if (loginType === "developer") {
+    // 密码 CT2026 → 开发者 → 永久VIP
     try { await window.pywebview.api.set_login_info("password", "0", "开发者"); } catch(e) {}
+    enterMainPage(btn, errEl, null);
+  }
+  else if (loginType === "free") {
+    // 密码 1 → 免费用户
+    try { await window.pywebview.api.set_login_info("free", "0", "免费用户"); } catch(e) {}
     enterMainPage(btn, errEl, null);
   }
   else {
@@ -213,7 +258,8 @@ async function onQQScanLogin() {
    进入主界面
    ═══════════════════════════════════════════ */
 function enterMainPage(btn, errEl, userEmail) {
-  btn.textContent = "✓ 验证成功"; btn.style.background = "var(--success)"; errEl.textContent = "";
+  if (btn) { btn.textContent = "✓ 验证成功"; btn.style.background = "var(--success)"; }
+  if (errEl) errEl.textContent = "";
   document.getElementById("login-page").classList.remove("active");
   if (titleCursorTimer) titleCursorTimer();
   sleep(400).then(async () => {
@@ -232,6 +278,7 @@ function enterMainPage(btn, errEl, userEmail) {
         _state.userNickname = userInfo.nickname || "";
         _state.userType = userInfo.user_type || "";
         _state.vipDaysLeft = userInfo.vip_days_left || 0;
+        _state.vipCategory = userInfo.vip_category || "none";
         applyVipEffects();
       } catch(e) {
         console.warn("get_user_info error", e);
@@ -413,6 +460,44 @@ function renderHackList() {
       card.appendChild(info);
       card.appendChild(right);
       section.appendChild(card);
+
+      // ── Reach 特殊处理：距离滑块 ──
+      if (hid === "reach") {
+        const reachRow = document.createElement("div");
+        reachRow.className = "reach-slider-row";
+        reachRow.id = "reach-slider-row";
+
+        const reachLabel = document.createElement("span");
+        reachLabel.className = "reach-label";
+        reachLabel.textContent = "距离:";
+
+        const reachSlider = document.createElement("input");
+        reachSlider.type = "range";
+        reachSlider.className = "reach-range";
+        reachSlider.id = "reach-range-input";
+        reachSlider.min = "3.0";
+        reachSlider.max = "7.0";
+        reachSlider.step = "0.1";
+        reachSlider.value = "7.0";
+        reachSlider.addEventListener("input", () => {
+          const v = parseFloat(reachSlider.value);
+          document.getElementById("reach-value-display").textContent = v.toFixed(1);
+        });
+        reachSlider.addEventListener("change", () => {
+          const v = parseFloat(reachSlider.value);
+          onReachValueChange(v);
+        });
+
+        const reachVal = document.createElement("span");
+        reachVal.className = "reach-value";
+        reachVal.id = "reach-value-display";
+        reachVal.textContent = "7.0";
+
+        reachRow.appendChild(reachLabel);
+        reachRow.appendChild(reachSlider);
+        reachRow.appendChild(reachVal);
+        section.appendChild(reachRow);
+      }
     }
 
     return section;
@@ -446,7 +531,76 @@ function renderHackList() {
 function initMainPage() {
   document.getElementById("btn-connect").onclick = onConnect;
   document.getElementById("btn-disconnect").onclick = onDisconnect;
-  document.getElementById("btn-settings").onclick = openSettings;
+  document.getElementById("btn-settings").onclick = onOpenSettings;
+  document.getElementById("btn-account").onclick = onOpenAccountPanel;
+}
+
+/* ═══════════ 小号机 ═══════════ */
+
+function onOpenAccountPanel() {
+  document.getElementById("account-overlay").classList.remove("hidden");
+  // 非VIP用户显示「限时免费」标识
+  const badge = document.getElementById("account-free-badge");
+  if (badge) {
+    badge.classList.toggle("hidden", _state.isVip);
+  }
+}
+
+function closeAccountPanel() {
+  document.getElementById("account-overlay").classList.add("hidden");
+}
+
+async function onGenerateAccount() {
+  const btn = document.getElementById("btn-gen-account");
+  const emailInput = document.getElementById("account-email");
+  const pwdInput = document.getElementById("account-pwd");
+  const statusEl = document.getElementById("account-status");
+
+  btn.disabled = true;
+  btn.textContent = "生成中...";
+  statusEl.textContent = "";
+
+  try {
+    const result = await window.pywebview.api.get_random_account();
+    if (result.ok) {
+      emailInput.value = result.email;
+      pwdInput.value = result.password;
+      statusEl.textContent = "✓ 已生成，点击 📋 复制";
+      statusEl.className = "account-status ok";
+    } else {
+      statusEl.textContent = "✕ " + (result.msg || "获取失败");
+      statusEl.className = "account-status err";
+    }
+  } catch (e) {
+    statusEl.textContent = "✕ 调用失败";
+    statusEl.className = "account-status err";
+  }
+
+  btn.disabled = false;
+  btn.textContent = "生成小号";
+}
+
+async function copyAccountField(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input.value) { showToast("请先生成账号", "err"); return; }
+  try {
+    await navigator.clipboard.writeText(input.value);
+    showToast("已复制到剪贴板", "ok");
+  } catch (e) {
+    // Fallback
+    input.select();
+    document.execCommand("copy");
+    showToast("已复制到剪贴板", "ok");
+  }
+}
+
+/* ── 设置按钮点击（非VIP不可用） ───────────────── */
+function onOpenSettings() {
+  if (!_state.isVip) {
+    showToast("仅VIP用户可使用热键设置功能", "err");
+    return;
+  }
+  openSettings();
 }
 
 /* ── VIP 效果应用 ────────────────────────────────── */
@@ -457,25 +611,38 @@ function applyVipEffects() {
   const vipCountdown = document.getElementById("vip-countdown");
 
   if (_state.isVip) {
-    // VIP用户 — 显示尊敬称呼
     let displayName = _state.userNickname;
     if (_state.userType === "password") {
       displayName = "开发者";
     }
     let labelText = `尊敬的VIP用户 ${displayName}`;
+    let countdownText = "";
 
-    // 显示VIP剩余天数（有时限的VIP）
-    if (_state.vipDaysLeft > 0) {
-      labelText += ` · VIP剩余 ${_state.vipDaysLeft} 天`;
-      if (vipCountdown) {
-        vipCountdown.textContent = `您的VIP还有 ${_state.vipDaysLeft} 天到期`;
-        vipCountdown.classList.remove("hidden");
-      }
-    } else if (_state.vipDaysLeft === -1) {
-      if (vipCountdown) {
-        vipCountdown.textContent = "永久VIP · 无限制使用";
-        vipCountdown.classList.remove("hidden");
-      }
+    switch (_state.vipCategory) {
+      case "permanent":
+        // 开发者 — 永久VIP，显示"永久VIP"
+        countdownText = "永久VIP · 无限制使用";
+        if (vipCountdown) {
+          vipCountdown.textContent = countdownText;
+          vipCountdown.classList.remove("hidden");
+        }
+        break;
+      case "version":
+        // 版本授权VIP — 有VIP但不显示到期信息
+        if (vipCountdown) {
+          vipCountdown.classList.add("hidden");
+        }
+        break;
+      case "timed":
+        // 有时限VIP — 显示剩余天数
+        if (_state.vipDaysLeft > 0) {
+          labelText += ` · VIP剩余 ${_state.vipDaysLeft} 天`;
+          if (vipCountdown) {
+            vipCountdown.textContent = `您的VIP还有 ${_state.vipDaysLeft} 天到期`;
+            vipCountdown.classList.remove("hidden");
+          }
+        }
+        break;
     }
 
     userLabel.textContent = labelText;
@@ -486,22 +653,19 @@ function applyVipEffects() {
     document.getElementById("main-page").classList.add("vip");
     document.getElementById("main-header").classList.add("vip-header");
 
-    // VIP欢迎Toast
     setTimeout(() => {
       showToast("👑 欢迎回来，尊敬的VIP用户！", "ok");
     }, 1500);
 
-    // 显示隐藏的VIP专属装饰
     document.querySelectorAll(".vip-only").forEach(el => el.classList.remove("hidden"));
+    initLockerSection(); // 初始化锁服界面
   } else {
-    // 普通用户
     if (vipBadge) vipBadge.classList.add("hidden");
     if (vipCountdown) vipCountdown.classList.add("hidden");
     document.getElementById("main-page").classList.remove("vip");
     document.getElementById("main-header").classList.remove("vip-header");
     document.querySelectorAll(".vip-only").forEach(el => el.classList.add("hidden"));
 
-    // 确保用户信息仍显示（昵称）
     if (userLabel.textContent) {
       userEl.classList.remove("hidden");
     }
@@ -512,6 +676,101 @@ function applyVipEffects() {
 function onUpgradeVIP() {
   window.pywebview.api.open_browser('https://mc-omer-hub.github.io/Mc_comer_Mod_Web/');
   showToast("正在打开VIP购买页面...", "ok");
+}
+
+/* ═══════════ 联机大厅锁服 ═══════════ */
+
+let _lockerPollTimer = null;
+
+async function initLockerSection() {
+  // 检查文件就绪状态
+  try {
+    const ready = await window.pywebview.api.check_locker_ready();
+    const badge = document.getElementById("locker-cookie-badge");
+    const lockerInfo = document.getElementById("locker-info");
+
+    if (ready.ok) {
+      // 文件就绪，获取 cookie 数量
+      const res = await window.pywebview.api.get_cookies_count();
+      if (badge) badge.textContent = "账号: " + (res.count || 0) + "/" + (res.max || 9);
+    } else {
+      if (badge) badge.textContent = "⚠ 未就绪";
+      if (lockerInfo) {
+        lockerInfo.innerHTML = '<span class="error">' + ready.msg + "</span>";
+      }
+    }
+  } catch (e) { /* ignore */ }
+}
+
+async function onLockerStart() {
+  const input = document.getElementById("locker-room-input");
+  const room = input.value.trim();
+  if (!room) { showToast("请输入房间号", "err"); return; }
+
+  const btn = document.getElementById("btn-locker-start");
+  const statusEl = document.getElementById("locker-status");
+  btn.disabled = true; btn.textContent = "启动中...";
+  statusEl.textContent = "启动中..."; statusEl.className = "locker-status warn";
+
+  try {
+    const result = await window.pywebview.api.start_locker(room);
+    if (result.ok) {
+      showToast(result.msg, "ok");
+      statusEl.textContent = "运行中"; statusEl.className = "locker-status active";
+      document.getElementById("btn-locker-stop").disabled = false;
+      startLockerStatusPolling();
+    } else {
+      showToast(result.msg, "err");
+      statusEl.textContent = result.msg; statusEl.className = "locker-status err";
+      btn.disabled = false; btn.textContent = "🚀 开始锁服";
+    }
+  } catch (e) {
+    showToast("调用失败: " + e.message, "err");
+    btn.disabled = false; btn.textContent = "🚀 开始锁服";
+  }
+}
+
+async function onLockerStop() {
+  const btn = document.getElementById("btn-locker-stop");
+  const statusEl = document.getElementById("locker-status");
+  btn.disabled = true;
+
+  try {
+    const result = await window.pywebview.api.stop_locker();
+    showToast(result.msg, "ok");
+    statusEl.textContent = "已停止"; statusEl.className = "locker-status";
+    document.getElementById("btn-locker-start").disabled = false;
+    document.getElementById("btn-locker-start").textContent = "🚀 开始锁服";
+    btn.disabled = true;
+    stopLockerStatusPolling();
+  } catch (e) {
+    showToast("调用失败: " + e.message, "err");
+    btn.disabled = false;
+  }
+}
+
+function startLockerStatusPolling() {
+  stopLockerStatusPolling();
+  _lockerPollTimer = setInterval(async () => {
+    try {
+      const status = await window.pywebview.api.get_locker_status();
+      const infoEl = document.getElementById("locker-info");
+      if (infoEl && status.running) {
+        infoEl.innerHTML =
+          `房间: <span class="highlight">${status.room_name || "?"}</span> | ` +
+          `活跃账号: <span class="highlight">${status.active_accounts}</span>/${status.total_accounts}`;
+      }
+    } catch (e) { /* ignore */ }
+  }, 2000);
+}
+
+function stopLockerStatusPolling() {
+  if (_lockerPollTimer) {
+    clearInterval(_lockerPollTimer);
+    _lockerPollTimer = null;
+  }
+  const infoEl = document.getElementById("locker-info");
+  if (infoEl) infoEl.innerHTML = "";
 }
 
 /* ── 状态轮询（供热键同步 UI） ────────────────────── */
@@ -619,6 +878,14 @@ async function onToggleHack(id, enable) {
       if (st) { st.textContent = enable ? "● 开启" : "● 关闭"; st.className = "hack-status " + (enable ? "on" : "off"); }
       const h = getHack(id);
       showToast(`${h?.name || id} ${enable ? "已启用" : "已禁用"}`, "ok");
+      // ── Reach 特殊处理：开启后同步当前滑块值 ──
+      if (id === "reach" && enable) {
+        const slider = document.getElementById("reach-range-input");
+        if (slider) {
+          const v = parseFloat(slider.value);
+          await window.pywebview.api.set_reach_value(v);
+        }
+      }
     } else {
       showToast(res.msg || "操作失败", "err");
       const cb = document.getElementById("hack-" + id);
@@ -628,6 +895,20 @@ async function onToggleHack(id, enable) {
     showToast("操作异常: " + e.message, "err");
     const cb = document.getElementById("hack-" + id);
     if (cb) cb.checked = !enable;
+  }
+}
+
+/* ── Reach 距离值修改 ─────────────────────────────── */
+async function onReachValueChange(value) {
+  try {
+    const res = await window.pywebview.api.set_reach_value(value);
+    if (res.ok) {
+      showToast("距离已更新: " + value.toFixed(1), "ok");
+    } else {
+      showToast(res.msg || "设置失败", "err");
+    }
+  } catch (e) {
+    showToast("设置异常: " + e.message, "err");
   }
 }
 

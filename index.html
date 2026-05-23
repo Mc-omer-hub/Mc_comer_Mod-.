@@ -147,6 +147,7 @@
     </span>
     <span id="vip-countdown" class="vip-countdown hidden"></span>
     <span id="header-clock" class="header-clock">--:--:--</span>
+    <button class="btn-account" id="btn-account" title="小号机">📧</button>
     <button class="btn-settings" id="btn-settings" title="设置">⚙</button>
   </div>
 
@@ -162,6 +163,29 @@
         <span class="conn-status" id="conn-status">未连接</span>
         <span class="latency-badge" id="latency-badge">延迟: --ms</span>
       </div>
+    </div>
+
+    <!-- ══ 联机大厅锁服（仅VIP） ══ -->
+    <div class="section vip-only hidden" id="section-locker">
+      <div class="section-title-row">
+        <div class="section-title">🔒 联机大厅锁服</div>
+        <span class="section-badge" id="locker-cookie-badge">加载中...</span>
+      </div>
+      <div class="locker-row">
+        <input
+          type="text"
+          id="locker-room-input"
+          class="locker-input"
+          placeholder="输入房间号（必须无密码）"
+          autocomplete="off"
+        >
+        <button class="card-btn" id="btn-locker-start" onclick="onLockerStart()">🚀 开始锁服</button>
+        <button class="card-btn danger" id="btn-locker-stop" onclick="onLockerStop()" disabled>⏹ 停止</button>
+      </div>
+      <div class="locker-row">
+        <span class="locker-status" id="locker-status">就绪</span>
+      </div>
+      <div class="locker-info" id="locker-info"></div>
     </div>
 
     <!-- Hack 开关列表 -->
@@ -189,6 +213,35 @@
 
 <!-- Toast 通知 -->
 <div id="toast-container"></div>
+
+<!-- ══ 小号机弹窗 ══ -->
+<div id="account-overlay" class="overlay hidden">
+  <div class="settings-card" style="width:400px;">
+    <div class="settings-header">
+      <span class="settings-title">163 小号机</span>
+      <span class="account-free-badge hidden" id="account-free-badge">限时免费</span>
+      <button class="settings-close" onclick="closeAccountPanel()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="account-field">
+        <label class="account-label">账号</label>
+        <div class="account-row">
+          <input type="text" id="account-email" class="account-input" readonly placeholder="点击生成获取">
+          <button class="account-copy-btn" onclick="copyAccountField('account-email')">复制</button>
+        </div>
+      </div>
+      <div class="account-field">
+        <label class="account-label">密码</label>
+        <div class="account-row">
+          <input type="text" id="account-pwd" class="account-input" readonly placeholder="点击生成获取">
+          <button class="account-copy-btn" onclick="copyAccountField('account-pwd')">复制</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-gen-account" onclick="onGenerateAccount()" style="margin-top:16px;">生成小号</button>
+      <div id="account-status" class="account-status"></div>
+    </div>
+  </div>
+</div>
 
 <!-- 设置面板（热键配置） -->
 <div id="settings-overlay" class="overlay hidden">
