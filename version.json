@@ -1,16 +1,14 @@
 {
-  "version": "6.5",
+  "version": "6.6",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "新增Reach功能，扩展攻击距离（3.0~7.0可调）",
-    "新增无限耐久功能，丢出物品再捡起后永不损坏",
-    "穿墙飞行升级为三合一注入（CanFly + Planar + 3D）",
-    "自动疾跑改为内存Hook注入，不再依赖按键模拟",
-    "移除已损坏的伪秒挖功能",
-    "修复Reach指令长度计算错误（7B→8B）",
-    "优化程序性能",
-    "修复已知bug"
+    "接入Supabase云端数据库，统计QQ用户",
+    "新增新用户免费试用功能（10分钟VIP体验）",
+    "新增每日签到积分系统（签到+5积分）",
+    "新增积分兑换VIP试用功能（20积分→1小时VIP）",
+    "VIP用户自动清空积分数据",
+    "优化程序性能"
   ]
 }
