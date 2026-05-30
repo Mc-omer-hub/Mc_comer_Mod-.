@@ -1,14 +1,13 @@
 {
-  "version": "6.6",
+  "version": "6.7",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "接入Supabase云端数据库，统计QQ用户",
-    "新增新用户免费试用功能（10分钟VIP体验）",
-    "新增每日签到积分系统（签到+5积分）",
-    "新增积分兑换VIP试用功能（20积分→1小时VIP）",
-    "VIP用户自动清空积分数据",
-    "优化程序性能"
+    "移除Cookie缓存功能（每次登录需重新验证）",
+    "新增邮箱验证码登录（163邮箱→QQ邮箱发送验证码）",
+    "优化数据写入（支持邮箱登录QQ号写入数据库）",
+    "优化穿墙飞行"
   ]
 }
+
