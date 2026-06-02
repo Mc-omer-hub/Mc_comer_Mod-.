@@ -1,13 +1,12 @@
 {
-  "version": "6.7",
+  "version": "6.8",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Mc_comer_Mod_Setup.exe",
   "log": [
-    "移除Cookie缓存功能（每次登录需重新验证）",
-    "新增邮箱验证码登录（163邮箱→QQ邮箱发送验证码）",
-    "优化数据写入（支持邮箱登录QQ号写入数据库）",
-    "优化穿墙飞行"
+    "新增游戏变速功能",
+    "新增设置远眺距",
+    "优化功能页面,强化视觉效果"
   ]
 }
 
