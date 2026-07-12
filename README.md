@@ -1,8 +1,8 @@
-# Mc_comer Mod 使用说明
+# Erable_Mod 使用说明
 
 ## 简介
 
-Mc_comer Mod 是一款基于 Cheat Engine 7.6 辅助工具。
+Erable_Mod 是一款基于 Cheat Engine 7.6 / python 辅助工具。
 
 帮助我的世界开发者快速建立外挂环境,以便测试反作弊
 
