@@ -1,14 +1,12 @@
 {
-  "version": "6.9",
+  "version": "7.0",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
+  "free": "2026-07-17",
+  "free-log": "今天心情好免费发放VIP",
   "log": [
-    "项目名称更换",
-    "新增功能断网移动",
-    "新增功能TP传送"
+    "新增功能防止摔伤(NoFall)",
+    "新增限时免费VIP机制"
   ]
 }
-
-
-
