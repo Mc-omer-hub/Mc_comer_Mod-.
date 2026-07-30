@@ -1,12 +1,13 @@
 {
-  "version": "7.0",
+  "version": "7.1",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
-  "free": "2026-07-23",
-  "free-log": "2026美加墨世界杯圆满结束，恭喜西班牙夺冠！送三日VIP庆祝！",
+  "free": "2026-07-17",
+  "free-log": "今天心情好免费发放VIP",
   "log": [
-    "新增功能防止摔伤(NoFall)",
-    "新增限时免费VIP机制"
+    "修复大量坏死功能",
+    "解除维护",
+    "新增功能去debuff"
   ]
 }
