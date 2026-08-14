@@ -1,14 +1,13 @@
 {
-  "version": "7.1",
+  "version": "7.2",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
-  "free": "2026-08-08",
+  "free": "2026-07-17",
   "free-log": "今天心情好免费发放VIP",
   "log": [
-    "修复大量坏死功能",
-    "解除维护",
-    "新增功能去debuff",
-    "新增缓存cookie功能"
+    "修复无负面buff功能",
+    "新增无火",
+    "新增支付宝支付方法"
   ]
 }
