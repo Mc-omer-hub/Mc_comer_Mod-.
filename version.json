@@ -1,13 +1,14 @@
 {
-  "version": "7.2",
+  "version": "7.3",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
   "free": "2026-07-17",
   "free-log": "今天心情好免费发放VIP",
   "log": [
-    "修复无负面buff功能",
-    "新增无火",
-    "新增支付宝支付方法"
+    "新增Vip_json签名",
+    "修复 Vip校验漏洞",
+    "提升程序安全性",
+    "前端闭源，前端不再公开"
   ]
 }
