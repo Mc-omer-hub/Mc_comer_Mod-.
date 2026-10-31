@@ -1,13 +1,15 @@
 {
-  "version": "7.4",
+  "version": "7.5",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
-  "free": "2026-10-07",
-  "free-log": "国庆假期免费vip",
+  "free": "2026-09-27",
+  "free-log": "中秋假期免费vip",
   "log": [
-    "新增「反隐身」功能：隐身的玩家/实体依然可见",
-    "更新验证密钥",
-    "提升程序安全性"
+    "移除「不显示火焰」功能",
+    "移除「反隐身」功能",
+    "移除「穿墙飞行」功能",
+    "添加签到领vip活动【限时】",
+    "新增「自动提权」功能，注入失败时会提权"
   ]
 }
