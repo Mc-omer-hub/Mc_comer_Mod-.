@@ -1,15 +1,13 @@
 {
-  "version": "7.5",
+  "version": "7.6",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
   "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
   "free": "2026-09-27",
   "free-log": "中秋假期免费vip",
   "log": [
-    "移除「不显示火焰」功能",
-    "移除「反隐身」功能",
-    "移除「穿墙飞行」功能",
-    "添加签到领vip活动【限时】",
-    "新增「自动提权」功能，注入失败时会提权"
+    "新增「显示坐标」功能（自启动模块）",
+    "非VIP界面常显全部功能，除碰撞修改外均锁定为仅VIP可用",
+    "添加机器码校验"
   ]
 }
