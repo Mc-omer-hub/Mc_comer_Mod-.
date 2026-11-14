@@ -1,13 +1,14 @@
 {
-  "version": "7.6",
+  "version": "7.7",
   "maintenance": false,
   "maintenance_message": "系统维护中，请稍后重试",
-  "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_Mod_Setup.exe",
+  "download_url": "https://github.com/Mc-omer-hub/Mc_comer_Mod-./releases/download/Mod/Erable_zxbox_Setup.exe",
   "free": "2026-09-27",
   "free-log": "中秋假期免费vip",
   "log": [
     "新增「显示坐标」功能（自启动模块）",
     "非VIP界面常显全部功能，除碰撞修改外均锁定为仅VIP可用",
-    "添加机器码校验"
+    "添加机器码校验",
+    "产品运营权移交"
   ]
 }
